@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>protocolPage</title>
+	<script type="text/javascript" src="http://wap.wangxiao.cn/content/wenda/js/qa-rem.js"></script>
+	<script type="text/javascript" src="http://wap2.wangxiao.cn/Content/js/jquery.1.11.3.min.js"></script>
+	<link rel="stylesheet" href="css/tsbase.css">
+
+</head>
+<body class="body">
+	<header>
+		<div class="header">
+			<a class="back-box" onclick="history.back(-1)">
+				<span class="iconfont">&#xe606;</span>
+			</a>
+			<span class="title">签署协议</span>
+		</div>
+	</header>
+	<div class="wrap">
+		<div class="tip">
+			为保障您的协议权益<br>请如实填写身份信息
+		</div>
+		<div class="info_box">真实姓名：<input type="text" id="realName" placeholder="请输入您的真实姓名"></div>
+		<div class="info_box last">身份证号：<input id="IDNumber" type="text" placeholder="请输入您的身份证号"></div>
+		<div class="note">*&nbsp;仅用于签署商品协议，中大网校保证100%保密</div>
+		<input class="submit" type="button" value="提&nbsp;&nbsp;交" />
+		<div class="note">*&nbsp;您购买的商品包含如下协议，请仔细阅读后填写真实身份信息签署协议，以保障您的协议权益。(签署即表示同意协议)</div>
+		<div class="protocol"><a href="#">《协议协议》</a><a href="#">《协议协议协议协议协议协议》</a><a href="#">《协议协议协议协议协议协议》</a></div>
+	</div>
+	<div class="buy_skip js_skip" style="opacity: 0; display: none;"></div>
+</body>
+<script type="text/javascript">
+	window.onload=function(){
+		$('#IDNumber').blur(function() {
+	      if(validateIdCard($(this).val().trim())){
+	      	//$('#error').html("");
+	      }else{
+	      	//$('#error').html("身份证号错误！");
+	      	showMessage("身份证号错误！");
+	      }
+	    });
+	    //点击提交
+	    $('.submit').on('click',function(){
+	    	if(!$("#realName").val().trim().length>0){
+	    		//$('#error').html("姓名不能为空");
+	    		showMessage("姓名不能为空");
+	    		return;
+	    	}
+	    	//身份证验证
+	    	if(!validateIdCard($("#IDNumber").val().trim())){
+	    		//$('#error').html("身份证号错误！");
+	    		showMessage("身份证号错误！");
+	    		return;
+	    	}
+	    	//提交
+	    	console.log("提交")
+	    });
+	};
+	//验证身份证号，返回bool值
+	function validateIdCard(idCard){
+		 //15位和18位身份证号码的正则表达式
+		 var regIdCard=/^(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$)|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])((\d{4})|\d{3}[Xx])$)$/;
+
+		 //如果通过该验证，说明身份证格式正确，但准确性还需计算
+		 if(regIdCard.test(idCard)){
+		  if(idCard.length==18){
+		   var idCardWi=new Array( 7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2 ); //将前17位加权因子保存在数组里
+		   var idCardY=new Array( 1, 0, 10, 9, 8, 7, 6, 5, 4, 3, 2 ); //这是除以11后，可能产生的11位余数、验证码，也保存成数组
+		   var idCardWiSum=0; //用来保存前17位各自乖以加权因子后的总和
+		   for(var i=0;i<17;i++){
+		    idCardWiSum+=idCard.substring(i,i+1)*idCardWi[i];
+		   }
+
+		   var idCardMod=idCardWiSum%11;//计算出校验码所在数组的位置
+		   var idCardLast=idCard.substring(17);//得到最后一位身份证号码
+			var error='';
+		   //如果等于2，则说明校验码是10，身份证号码最后一位应该是X
+		   if(idCardMod==2){
+		    if(idCardLast=="X"||idCardLast=="x"){
+		     return true;
+		    }else{
+		     return false;
+		    }
+		   }else{
+		    //用计算出的验证码与最后一位身份证号码匹配，如果一致，说明通过，否则是无效的身份证号码
+		    if(idCardLast==idCardY[idCardMod]){
+		     return true;
+		    }else{
+		     return false;
+		    }
+		   }
+		  }
+		 }else{
+		  return false;
+		 }
+	}
+	function showMessage(skiptext) {
+		$(".buy_skip").stop(true, true).animate({
+			opacity: 1,
+		}, 2000, function() {
+			$(".buy_skip").show();
+		}).text(skiptext).stop(true, true).animate({
+			opacity: 0,
+		}, 2000, function() {
+			$(".buy_skip").hide();
+		});
+	}
+</script>
+</html>
